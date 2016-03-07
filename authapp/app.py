@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 
 import json
 
-from config import token_timeout, jwt_algorithm
-
 import jwt
 from jwt.contrib.algorithms.pycrypto import RSAAlgorithm
 from jwt.exceptions import DecodeError, ExpiredSignature
@@ -20,6 +18,9 @@ except:
 	print 'Error: No secret key.'
 
 users = json.loads(open('users.json', 'rb').read().strip())
+
+token_algorithm = 'RS256'
+token_timeout = 5 # minutes
 
 
 def authenticate(user, pwd):
