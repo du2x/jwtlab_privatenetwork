@@ -21,13 +21,13 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "web1" do |web1|
     web1.vm.box = "ubuntu/trusty64"
-    web1.vm.provision :shell, path: "bootstrap_web.sh"
+    web1.vm.provision :shell, path: "bootstrap_web1.sh"
     web1.vm.network "private_network", ip: "192.168.1.2"
   end
 
   config.vm.define "web2" do |web2|
     web2.vm.box = "ubuntu/trusty64"
-    web2.vm.provision :shell, path: "bootstrap_web.sh"
+    web2.vm.provision :shell, path: "bootstrap_web2.sh"
     web2.vm.network "private_network", ip: "192.168.1.3"
   end
 
