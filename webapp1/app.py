@@ -1,10 +1,76 @@
-from flask import Flask
+import os, sys
+
+from flask import Flask, render_template, request, jsonify, g, redirect
+from functools import wraps
+
+from datetime import datetime, timedelta
+
+import json
+
+import jwt
+from jwt.exceptions import DecodeError, ExpiredSignature
+from jwt.contrib.algorithms.pycrypto import RSAAlgorithm
+
+jwt_algorithm = 'RS256'
+
+jwt.register_algorithm(jwt_algorithm, RSAAlgorithm(RSAAlgorithm.SHA256))
+
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
-    return 'I am the webapp1!'
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+
+pbkey_filepath = os.path.join(APP_ROOT, 'public.key')
+
+
+try:
+        # you may not commit public.key
+        app.config['SECRET_KEY'] = open(pbkey_filepath, 'rb').read()
+except:
+        logging.error('Could not read public key.')
+
+
+def jwt_required(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if not request.headers.get('Authorization'):
+			return jsonify(message='Missing authorization header'), 401
+		try:
+			payload = parse_token(request)
+			g.user = payload['sub']
+		except DecodeError:
+			response = jsonify(message='Token is invalid')
+			response.status_code = 401
+			return response
+		except ExpiredSignature:
+			return jsonify(message='Token has expired'), 401
+		return f(*args, **kwargs)
+	return decorated_function
+
+
+def parse_token(req):
+	token = req.headers.get('Authorization').split()[1]
+	print token
+	return jwt.decode(token, app.config['SECRET_KEY'], algorithms=jwt_algorithm)
+
+
+# curl -X GET http://localhost:8070/a"
+@app.route('/', methods=['GET', ])
+def home():
+	return render_template('index.html')
+
+
+# curl -X GET http://localhost:8070/a/public"
+@app.route('/public', methods=['GET', ])
+def public():
+	return "Response from PUBLIC service", 200
+
+
+# curl -X GET http://localhost:8070/a/restricted -H "Authorization: Bearer $token"
+@app.route('/restricted', methods=['GET'])
+@jwt_required
+def restricted():
+	return "Response from RESTRICTED service", 200	
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 

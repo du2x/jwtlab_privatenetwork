@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+        <title>Web1</title>
+	<script>
+	var fnReqPublic = function(){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(data) {
+			if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+				document.getElementById("res_public").innerHTML = xhr.responseText;
+			}	
+		}	
+		xhr.open("GET", "a/public", true);
+                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");            
+		xhr.send();
+	}
+
+	var fnReqRestricted = function(){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(data) {
+			if (xhr.readyState == XMLHttpRequest.DONE) {
+				if(xhr.status==200)
+					document.getElementById("res_restricted").innerHTML = xhr.responseText;
+				else
+					document.getElementById("res_restricted").innerHTML = "! token invalid or not sent !";
+			}	
+			
+		}
+		xhr.open("GET", "a/restricted", true);
+                var token = localStorage.getItem("token");
+		xhr.setRequestHeader("Authorization", "Bearer " + token);
+		xhr.send();
+	}
+
+	</script>
+</head>
+<body>
+	<h1>Webapp 1</h1>
+	<button id="btn_public" onclick="fnReqPublic()" value="Public Service">Public Service</button><p id="res_public" style="border:1px"></p>
+	<br />
+	<button id="btn_restricted" onclick="fnReqRestricted()" value="Restricted Service">Restricted Service</button><p id="res_restricted" style="border:1px"></p>
+</body>
+</html>
+

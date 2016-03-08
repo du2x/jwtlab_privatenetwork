@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+        <title>Login</title>
+</head>
+<body>
+        <script>
+        var fnLogin = function(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function(data) {
+                        if (xhttp.readyState == XMLHttpRequest.DONE) {
+				if(xhttp.status == 200){
+					localStorage.setItem('token', xhttp.responseText)
+					document.getElementById("login-form").style.display="None";
+					document.getElementById("message").innerHTML = "You have logged in successfully."
+				} else{
+					document.getElementById("message").innerHTML = "Log in failed."
+				}
+				
+                        }
+                };
+                
+                var login = document.getElementById('txtlogin').value;
+                var password = document.getElementById('txtpassword').value;
+
+                xhttp.open("POST", "signin", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");            
+                xhttp.send("login="+login+"&password="+password);
+        }
+        </script>
+	<h1>Auth app</h1>
+	<p id="message"></p>
+        <form>
+                <fieldset id="login-form">
+                        <legend>Login form:</legend>
+			<label for="txtlogin">Email: </label>
+                        <input name="login" id="txtlogin"/>
+			<br />
+			<label for="txtpassword">Password: </label>
+                        <input type="password" name="password" id="txtpassword" />
+			<br />
+                        <input type="button" onclick="fnLogin()" value="Login"/>
+                </fieldset>
+        </form>
+</body>
+</html>
