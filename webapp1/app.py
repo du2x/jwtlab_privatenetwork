@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, logging
 
 from flask import Flask, render_template, request, jsonify, g, redirect
 from functools import wraps
@@ -16,6 +16,8 @@ jwt_algorithm = 'RS256'
 jwt.register_algorithm(jwt_algorithm, RSAAlgorithm(RSAAlgorithm.SHA256))
 
 app = Flask(__name__)
+app.logger.addHandler(logging.StreamHandler(stream=sys.stderr))
+
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
 
@@ -69,7 +71,7 @@ def public():
 @app.route('/restricted', methods=['GET'])
 @jwt_required
 def restricted():
-	return "Response from RESTRICTED service", 200	
+	return "Welcome %s, this a response from RESTRICTED service" % g.user, 200	
 
 if __name__ == '__main__':
     app.run(debug=True)
