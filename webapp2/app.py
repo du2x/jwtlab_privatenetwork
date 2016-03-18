@@ -37,22 +37,17 @@ def jwt_required(f):
 		if not request.headers.get('Authorization'):
 			return jsonify(message='Missing authorization header'), 401
 		try:
-			payload = parse_token(request)
+			token = request.headers.get('Authorization').split()[1]
+			payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=jwt_algorithm)
 			g.user = payload['sub']
 		except DecodeError:
-			response = jsonify(message='Token is invalid')
-			response.status_code = 401
-			return response
+			return jsonify(message='Token %s is invalid' % token), 401
 		except ExpiredSignature:
-			return jsonify(message='Token has expired'), 401
+			return jsonify(message='Token %s has expired' % token), 401
+		except IndexError:
+			return jsonify(message='Missing token'), 401
 		return f(*args, **kwargs)
 	return decorated_function
-
-
-def parse_token(req):
-	token = req.headers.get('Authorization').split()[1]
-	print token
-	return jwt.decode(token, app.config['SECRET_KEY'], algorithms=jwt_algorithm)
 
 
 # curl -X GET http://localhost:8070/a"

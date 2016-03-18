@@ -80,6 +80,20 @@ def login():
 			logging.error('Authentication error.')
 			return str(e)
 			
+# curl -X GET http://localhost:8070/auth/status -H "Authorization: Bearer $token"
+@app.route('/status', methods=['POST'])
+def status():
+	if not request.headers.get('Authorization'):
+		return jsonify(message='Missing authorization header'), 401
+	try:
+		token = request.headers.get('Authorization').split()[1]
+		p_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=jwt_algorithm)
+		return jsonify(message="Token is valid"), 200
+	except DecodeError:
+		return jsonify(message='Token is invalid'), 401
+	except ExpiredSignature:
+		return jsonify(message='Token has expired'), 401
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-        <title>Webapp A running at server Web1</title>
+        <title>Webapp1 running at server Web1</title>
 	<script>
 	var fnReqPublic = function(){
 		var xhr = new XMLHttpRequest();
@@ -35,10 +35,11 @@
 	</script>
 </head>
 <body>
-	<h1>Webapp A running at server Web1</h1>
+	<h1>Webapp 1 running at server Web1</h1>
 	<button id="btn_public" onclick="fnReqPublic()" value="Public Service">Public Service</button><p id="res_public" style="border:1px"></p>
 	<br />
 	<button id="btn_restricted" onclick="fnReqRestricted()" value="Restricted Service">Restricted Service</button><p id="res_restricted" style="border:1px"></p>
+	<script src="/auth/static/auth_helper.js"></script>
 </body>
 </html>
 
